@@ -6,6 +6,20 @@ const pool = require('../db');
 async function migrate() {
   const client = await pool.connect();
   try {
+    const baseSchema = await client.query("SELECT to_regclass('public.student') AS table_name");
+    if (!baseSchema.rows[0].table_name) {
+      const baseSchemaSql = fs.readFileSync(path.join(__dirname, '..', 'hostel_schema.sql'), 'utf8');
+      await client.query('BEGIN');
+      try {
+        await client.query(baseSchemaSql);
+        await client.query('COMMIT');
+        console.log('Applied base hostel schema');
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      }
+    }
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS schema_migration (
         migration_name VARCHAR(255) PRIMARY KEY,
