@@ -1,0 +1,11 @@
+const express = require('express');
+const controller = require('../controllers/parentController');
+const { authenticate, requireRole } = require('../middleware/authMiddleware');
+const router = express.Router();
+router.use(authenticate, requireRole('parent'));
+router.get('/children', controller.children);
+router.get('/children/:studentId/attendance', controller.attendance);
+router.get('/children/:studentId/invoices', controller.invoices);
+router.get('/children/:studentId/announcements', controller.announcements);
+router.get('/children/:studentId/leave', controller.leave);
+module.exports = router;

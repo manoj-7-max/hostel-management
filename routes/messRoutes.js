@@ -1,0 +1,11 @@
+const express = require('express');
+const controller = require('../controllers/messController');
+const { authenticate, requirePermission } = require('../middleware/authMiddleware');
+const router = express.Router();
+router.use(authenticate, requirePermission('mess.read','mess.manage'));
+router.get('/subscriptions', controller.listSubscriptions);
+router.post('/subscriptions', requirePermission('mess.manage'), controller.createSubscription);
+router.patch('/subscriptions/:id', requirePermission('mess.manage'), controller.updateSubscription);
+router.get('/attendance', controller.listMealAttendance);
+router.post('/attendance', requirePermission('mess.manage'), controller.recordMealAttendance);
+module.exports = router;
